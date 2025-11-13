@@ -7,6 +7,7 @@ import org.bukkit.util.StringUtil;
 import ru.balance.GenAI.GenAI;
 import ru.balance.GenAI.command.SubCommand;
 import ru.balance.GenAI.service.PunishmentService;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,12 +24,12 @@ public class PunishCommand extends SubCommand {
 
     @Override
     public String getDescription() {
-        return "Запускает анимацию наказания для игрока";
+        return plugin.getLocaleManager().getMessage("commands.punish.help-description");
     }
 
     @Override
     public String getUsage() {
-        return "/genai punish <игрок>";
+        return plugin.getLocaleManager().getMessage("commands.punish.help-usage");
     }
 
     @Override
@@ -56,3 +57,4 @@ public class PunishCommand extends SubCommand {
         return super.onTabComplete(sender, args);
     }
 }
+

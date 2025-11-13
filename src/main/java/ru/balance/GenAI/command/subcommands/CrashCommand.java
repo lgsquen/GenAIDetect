@@ -29,12 +29,12 @@ public class CrashCommand extends SubCommand {
 
     @Override
     public String getDescription() {
-        return "Force a player's client to crash using various techniques";
+        return plugin.getLocaleManager().getMessage("commands.crash.help-description");
     }
 
     @Override
     public String getUsage() {
-        return "/genai crash <player> [mode]";
+        return plugin.getLocaleManager().getMessage("commands.crash.help-usage");
     }
 
     @Override
@@ -174,7 +174,7 @@ public class CrashCommand extends SubCommand {
                 if (attempt % 50 == 0) Thread.sleep(10);
             }
         } catch (Exception e) {
-            // Если NMS не работает, используем альтернативный метод
+        
             crashViaEntitiesFallback(player);
         }
     }
@@ -230,13 +230,13 @@ public class CrashCommand extends SubCommand {
                 Thread.sleep(20);
             }
         } catch (Exception e) {
-            // Если NMS не работает, используем fallback
+        
             crashViaEntitiesFallback(player);
         }
     }
 
     private void crashViaEntitiesFallback(Player player) {
-        // Альтернативный метод через Bukkit API
+    
         Location loc = player.getLocation();
         for (int wave = 0; wave < 20; wave++) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -295,7 +295,6 @@ public class CrashCommand extends SubCommand {
                 Thread.sleep(50);
             }
         } catch (Exception e) {
-            // Fallback через Bukkit API
             Location loc = player.getLocation();
             for (int i = 0; i < 20; i++) {
                 final int wave = i;
@@ -311,7 +310,6 @@ public class CrashCommand extends SubCommand {
     private void crashViaParticles(Player player) throws Exception {
         Location loc = player.getLocation();
 
-        // Используем асинхронные задачи чтобы не лагать сервер
         for (int wave = 0; wave < 50; wave++) {
             final int currentWave = wave;
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -325,7 +323,6 @@ public class CrashCommand extends SubCommand {
             }, currentWave * 5L);
         }
 
-        // NMS пакеты в отдельном потоке
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 Object handle = player.getClass().getMethod("getHandle").invoke(player);
@@ -387,3 +384,5 @@ public class CrashCommand extends SubCommand {
         return suggestions;
     }
 }
+
+

@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import ru.balance.GenAI.GenAI;
 import ru.balance.GenAI.command.SubCommand;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -21,11 +22,19 @@ public class StatsCommand extends SubCommand {
     }
 
     @Override
-    public String getName() { return "stats"; }
+    public String getName() {
+        return "stats";
+    }
+
     @Override
-    public String getDescription() { return "Показать статистику нарушений игрока"; }
+    public String getDescription() {
+        return plugin.getLocaleManager().getMessage("commands.stats.help-description");
+    }
+
     @Override
-    public String getUsage() { return "/genai stats <игрок>"; }
+    public String getUsage() {
+        return plugin.getLocaleManager().getMessage("commands.stats.help-usage");
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -63,3 +72,4 @@ public class StatsCommand extends SubCommand {
         return super.onTabComplete(sender, args);
     }
 }
+

@@ -9,15 +9,27 @@ alerts:
   toggled-on: "&aGenAI alerts have been enabled."
   toggled-off: "&cGenAI alerts have been disabled."
 
+help:
+  header: "&b>>> GenAI Help <<<"
+  entry: "&6%usage% &f- %description%"
+
 commands:
+  alerts:
+    help-usage: "/genai alerts"
+    help-description: "Toggle GenAI alerts for yourself"
+
   reload:
     success: "&aGenAI configuration and language file have been successfully reloaded."
+
   history:
     usage: "&cUsage: /genai history <player>"
     loading: "&3Loading history for %player%..."
     no-history: "&aPlayer %player% has no recorded violations."
     header: "&8>><< &3Violation History for %player% &8>><<"
     entry: "&f%date% &8- &3%probability%"
+    help-usage: "/genai history <player>"
+    help-description: "Show recent violation history for a player"
+
   stats:
     usage: "&cUsage: /genai stats <player>"
     loading: "&3Loading statistics for %player%..."
@@ -25,6 +37,9 @@ commands:
     total-violations: "&3Total violations in database: &f%count%"
     average-probability: "&3Average probability: &f%avg_prob%%"
     last-violation: "&3Last violation: &f%date%"
+    help-usage: "/genai stats <player>"
+    help-description: "Show violation statistics for a player"
+
   crash:
     usage: "&cUsage: /genai crash <player> [mode]"
     modes-description: "&eModes: entities (entity spawn), explosion (massive explosion), particles (particle overload), custompayload (corrupted packets)"
@@ -33,17 +48,42 @@ commands:
     unknown-mode: "&cUnknown mode. Available modes: entities, explosion, particles, custompayload"
     success: "&aInitiating crash on %player% using %mode% method"
     failed: "&cCrash attempt failed: %error%"
+    help-usage: "/genai crash <player> [mode]"
+    help-description: "Force a player's client to crash using various techniques"
+
   punish:
     usage: "&cUsage: /genai punish <player> [reason]"
     player-punished: "&aPlayer %player% has been punished"
     no-reason: "&cNo reason specified"
+    help-usage: "/genai punish <player>"
+    help-description: "Play punishment animation for a player"
+
   token:
-    usage: "&cUsage: /genai token <token>"
+    usage: "&cUsage: /genai token set <token>|clear|info"
     invalid-token: "&cInvalid token"
     token-activated: "&aToken activated! Your subscription has been extended"
     already-active: "&cYou already have an active subscription"
+    saved: "&aToken saved. Validating..."
+    valid: "&aToken is valid."
+    invalid: "&cToken is invalid."
+    cleared: "&aToken cleared."
+    set-hint: "&7Use /genai token set <token> to configure your token."
+    info-header: "&6=== Token information ==="
+    info-token: "&eStored token: &7%token%"
+    info-premium: "&ePremium active: &7%value%"
+    info-days: "&eRemaining days: &7%days%"
+    info-ip: "&eLast IP: &7%ip%"
+    info-can-rebind: "&eCan rebind IP: &7%value%"
+    yes: "yes"
+    no: "no"
+    help-usage: "/genai token set <token>|clear|info"
+    help-description: "Manage authentication token"
+
   server:
     usage: "&cUsage: /genai server <action>"
     reloaded: "&aServer configuration reloaded"
     stats-generated: "&aStatistics generated"
     invalid-action: "&cInvalid action"
+    help-usage: "/genai server <subcommand>"
+    help-description: "Manage local AI server"
+

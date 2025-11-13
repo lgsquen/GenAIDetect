@@ -8,6 +8,7 @@ import org.bukkit.util.StringUtil;
 import ru.balance.GenAI.GenAI;
 import ru.balance.GenAI.command.SubCommand;
 import ru.balance.GenAI.data.ViolationRecord;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -22,11 +23,19 @@ public class HistoryCommand extends SubCommand {
     }
 
     @Override
-    public String getName() { return "history"; }
+    public String getName() {
+        return "history";
+    }
+
     @Override
-    public String getDescription() { return "Показать историю нарушений игрока"; }
+    public String getDescription() {
+        return plugin.getLocaleManager().getMessage("commands.history.help-description");
+    }
+
     @Override
-    public String getUsage() { return "/genai history <игрок>"; }
+    public String getUsage() {
+        return plugin.getLocaleManager().getMessage("commands.history.help-usage");
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -74,3 +83,4 @@ public class HistoryCommand extends SubCommand {
         return super.onTabComplete(sender, args);
     }
 }
+

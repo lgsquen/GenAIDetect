@@ -5,6 +5,8 @@ import ru.balance.GenAI.GenAI;
 import ru.balance.GenAI.command.SubCommand;
 import ru.balance.GenAI.service.TokenService;
 
+import java.util.Map;
+
 public class TokenCommand extends SubCommand {
 
     public TokenCommand(GenAI plugin) {
@@ -18,81 +20,134 @@ public class TokenCommand extends SubCommand {
 
     @Override
     public String getDescription() {
-        return "Manage authentication token";
+        return plugin.getLocaleManager().getMessage("commands.token.help-description");
     }
 
     @Override
     public String getUsage() {
-        return "/genai token <set|clear|info> [token]";
+        return plugin.getLocaleManager().getMessage("commands.token.help-usage");
+    }
+
+    private String msg(String key) {
+        return plugin.getLocaleManager().getMessage(key);
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(plugin.getLocaleManager().getMessage("commands.token.usage"));
+            sender.sendMessage(msg("commands.token.usage"));
             return;
         }
 
-        String token = null;
-        if (args.length >= 2) {
-            StringBuilder tokenBuilder = new StringBuilder();
-            for (int i = 1; i < args.length; i++) {
-                if (i > 1) tokenBuilder.append(" ");
-                tokenBuilder.append(args[i]);
+        if (args.length == 1) {
+            String first = args[0].toLowerCase();
+            if (!"clear".equals(first) && !"info".equals(first) && !"set".equals(first)) {
+                handleSetToken(sender, args[0]);
+                return;
             }
-            token = tokenBuilder.toString();
         }
 
-        switch (args[0].toLowerCase()) {
-            case "set":
-                if (token == null) {
-                    sender.sendMessage(plugin.getLocaleManager().getMessage("commands.token.usage"));
+        String sub = args[0].toLowerCase();
+        switch (sub) {
+            case "set": {
+                if (args.length < 2) {
+                    sender.sendMessage(msg("commands.token.usage"));
                     return;
                 }
-
-                TokenService tokenService = plugin.getTokenService();
-                tokenService.setToken(token);
-
-                sender.sendMessage("§aТокен успешно установлен!");
-                sender.sendMessage("§7Проверка токена...");
-
-                tokenService.validateToken().thenAccept(isValid -> {
-                    if (isValid) {
-                        sender.sendMessage("§a✓ Токен действителен и активен!");
-                        sender.sendMessage("§eСтатус премиум: " + (tokenService.isPremiumActive() ? "Активен" : "Неактивен"));
-                        sender.sendMessage("§eОсталось дней: " + tokenService.getRemainingDays());
-                        sender.sendMessage("§eПоследний IP: " + tokenService.getLastIp());
-                    } else {
-                        sender.sendMessage("§c✗ Токен недействителен или истек!");
+                StringBuilder tokenBuilder = new StringBuilder();
+                for (int i = 1; i < args.length; i++) {
+                    if (i > 1) {
+                        tokenBuilder.append(" ");
                     }
-                });
+                    tokenBuilder.append(args[i]);
+                }
+                handleSetToken(sender, tokenBuilder.toString());
                 break;
+            }
 
             case "clear":
                 plugin.getTokenService().clearToken();
-                sender.sendMessage("§aТокен успешно очищен!");
+                sender.sendMessage(msg("commands.token.cleared"));
                 break;
 
             case "info":
-                TokenService infoService = plugin.getTokenService();
-                if (!infoService.hasToken()) {
-                    sender.sendMessage(plugin.getLocaleManager().getMessage("commands.token.invalid-token"));
-                    sender.sendMessage("§7Используйте §e/genai token set <токен> §7для установки токена.");
-                    return;
-                }
-
-                sender.sendMessage("§6=== Информация о токене ===");
-                sender.sendMessage("§eТокен: §7" + maskToken(infoService.getToken()));
-                sender.sendMessage("§eСтатус премиум: " + (infoService.isPremiumActive() ? "§aАктивен" : "§cНеактивен"));
-                sender.sendMessage("§eОсталось дней: §7" + infoService.getRemainingDays());
-                sender.sendMessage("§eПоследний IP: §7" + infoService.getLastIp());
-                sender.sendMessage("§eМожно перепривязать IP: " + (infoService.canRebindIp() ? "§aДа" : "§cНет"));
+                handleInfo(sender);
                 break;
 
             default:
-                sender.sendMessage(plugin.getLocaleManager().getMessage("commands.token.usage"));
+                sender.sendMessage(msg("commands.token.usage"));
                 break;
         }
+    }
+
+    private void handleSetToken(CommandSender sender, String token) {
+        TokenService tokenService = plugin.getTokenService();
+        tokenService.setToken(token);
+        sender.sendMessage(msg("commands.token.saved"));
+
+        tokenService.validateToken().thenAccept(isValid -> {
+            if (isValid) {
+                sender.sendMessage(msg("commands.token.valid"));
+                String yes = msg("commands.token.yes");
+                String no = msg("commands.token.no");
+                String premiumValue = tokenService.isPremiumActive() ? yes : no;
+                sender.sendMessage(msg("commands.token.info-premium").replace("%value%", premiumValue));
+                sender.sendMessage(msg("commands.token.info-days")
+                        .replace("%days%", String.valueOf(tokenService.getRemainingDays())));
+                sender.sendMessage(msg("commands.token.info-ip")
+                        .replace("%ip%", tokenService.getLastIp()));
+            } else {
+                sender.sendMessage(msg("commands.token.invalid"));
+            }
+        });
+    }
+
+    private void handleInfo(CommandSender sender) {
+        TokenService infoService = plugin.getTokenService();
+        if (!infoService.hasToken()) {
+            sender.sendMessage(msg("commands.token.invalid-token"));
+            sender.sendMessage(msg("commands.token.set-hint"));
+            return;
+        }
+
+        String maskedToken = maskToken(infoService.getToken());
+        sender.sendMessage(msg("commands.token.info-header"));
+        sender.sendMessage(msg("commands.token.info-token").replace("%token%", maskedToken));
+
+        infoService.getSubscriptionInfoAsync().thenAccept(subInfo -> {
+            boolean premiumActive = false;
+            int remainingDays = 0;
+            String lastIp = "Not bound";
+            boolean canRebind = false;
+
+            if (subInfo != null && !subInfo.isEmpty()) {
+                Object remainingDaysValue = subInfo.get("remaining_days");
+                if (remainingDaysValue instanceof Number) {
+                    remainingDays = ((Number) remainingDaysValue).intValue();
+                    premiumActive = remainingDays > 0;
+                }
+                Object lastIpValue = subInfo.get("last_ip");
+                if (lastIpValue != null) {
+                    lastIp = lastIpValue.toString();
+                }
+                Object canRebindValue = subInfo.get("can_rebind");
+                if (canRebindValue instanceof Boolean) {
+                    canRebind = (Boolean) canRebindValue;
+                }
+            }
+
+            String yes = msg("commands.token.yes");
+            String no = msg("commands.token.no");
+
+            sender.sendMessage(msg("commands.token.info-premium")
+                    .replace("%value%", premiumActive ? yes : no));
+            sender.sendMessage(msg("commands.token.info-days")
+                    .replace("%days%", String.valueOf(remainingDays)));
+            sender.sendMessage(msg("commands.token.info-ip")
+                    .replace("%ip%", lastIp));
+            sender.sendMessage(msg("commands.token.info-can-rebind")
+                    .replace("%value%", canRebind ? yes : no));
+        });
     }
 
     private String maskToken(String token) {
@@ -102,3 +157,4 @@ public class TokenCommand extends SubCommand {
         return token.substring(0, 8) + "****" + token.substring(token.length() - 4);
     }
 }
+

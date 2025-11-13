@@ -1,9 +1,11 @@
 package ru.balance.GenAI.command;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import ru.balance.GenAI.GenAI;
 import ru.balance.GenAI.command.subcommands.*;
@@ -57,9 +59,30 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     private void sendHelpMessage(CommandSender sender) {
-        sender.sendMessage("§b>>> GenAI Help <<<");
+        String header = plugin.getLocaleManager().getMessage("help.header");
+        String pattern = plugin.getLocaleManager().getMessage("help.entry");
+
+        boolean isPlayer = sender instanceof Player;
+        if (!isPlayer) {
+            header = ChatColor.stripColor(header);
+            pattern = ChatColor.stripColor(pattern);
+        }
+
+        sender.sendMessage(header);
+
         for (SubCommand subCommand : subCommands.values()) {
-            sender.sendMessage("§6" + subCommand.getUsage() + "§f - " + subCommand.getDescription()); 
+            String usage = subCommand.getUsage();
+            String description = subCommand.getDescription();
+
+            if (!isPlayer) {
+                usage = ChatColor.stripColor(usage);
+                description = ChatColor.stripColor(description);
+            }
+
+            String line = pattern
+                    .replace("%usage%", usage)
+                    .replace("%description%", description);
+            sender.sendMessage(line);
         }
     }
 
@@ -84,3 +107,4 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 }
+

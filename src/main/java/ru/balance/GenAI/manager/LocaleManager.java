@@ -53,4 +53,8 @@ public class LocaleManager {
         }
         return ChatColor.translateAlternateColorCodes('&', message);
     }
+
+    public String getLangCode() {
+        return langCode;
+    }
 }

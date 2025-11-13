@@ -35,7 +35,6 @@ dependencies {
     implementation "org.ejml:ejml-core:0.41"
     implementation "org.ejml:ejml-ddense:0.41"
     implementation "org.ejml:ejml-simple:0.41"
-    implementation "com.zaxxer:HikariCP:5.1.0"
     compileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
 }
@@ -69,7 +68,7 @@ processResources {
 }
 
 tasks.named('shadowJar') {
-    archiveClassifier.set('all')
+    archiveClassifier.set('')
 
     relocate 'com.github.retrooper.packetevents', 'ru.Fronzter.shadow.packetevents'
     relocate 'com.squareup.moshi', 'ru.Fronzter.shadow.moshi'
@@ -77,6 +76,10 @@ tasks.named('shadowJar') {
     relocate 'org.ejml', 'ru.Fronzter.shadow.ejml'
 
     minimize()
+}
+
+tasks.named('jar') {
+    enabled = false
 }
 
 tasks.build {

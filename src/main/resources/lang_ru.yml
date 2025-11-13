@@ -1,49 +1,89 @@
-# Сообщения на русском языке для GenAI
+# Русские сообщения для GenAI
 no-permission: "&cУ вас нет прав для использования этой команды."
 player-only-command: "&cЭту команду может использовать только игрок."
 unknown-subcommand: "&cНеизвестная подкоманда. Используйте /genai для помощи."
-player-not-found: "&cИгрок с ником '%player%' никогда не играл на сервере."
+player-not-found: "&cИгрок '%player%' ещё ни разу не заходил на этот сервер."
 
 alerts:
   message: "&8[&3GenAI&8] &f%player% &bподозревается в читерстве &8(&3%probability% | VL: %vl%&8)"
-  toggled-on: "&aОповещения от GenAI включены."
-  toggled-off: "&cОповещения от GenAI выключены."
+  toggled-on: "&aОповещения GenAI включены."
+  toggled-off: "&cОповещения GenAI выключены."
+
+help:
+  header: "&b>>> GenAI Help <<<"
+  entry: "&6%usage% &f- %description%"
 
 commands:
+  alerts:
+    help-usage: "/genai alerts"
+    help-description: "Включить/выключить оповещения для себя"
+
   reload:
-    success: "&aКонфигурация и языковой файл GenAI успешно перезагружены."
+    success: "&aКонфигурация и язык GenAI успешно перезагружены."
+
   history:
     usage: "&cИспользование: /genai history <игрок>"
     loading: "&3Загрузка истории для %player%..."
-    no-history: "&aУ игрока %player% нет зафиксированных нарушений."
-    header: "&8>><< &3История нарушений для %player% &8>><<"
+    no-history: "&aУ игрока %player% нет зарегистрированных нарушений."
+    header: "&8>><< &3История нарушений %player% &8>><<"
     entry: "&f%date% &8- &3%probability%"
+    help-usage: "/genai history <игрок>"
+    help-description: "Показать историю нарушений игрока"
+
   stats:
     usage: "&cИспользование: /genai stats <игрок>"
     loading: "&3Загрузка статистики для %player%..."
-    header: "&8>><< &3Статистика для %player% &8>><<"
+    header: "&8>><< &3Статистика %player% &8>><<"
     total-violations: "&3Всего нарушений в базе: &f%count%"
     average-probability: "&3Средняя вероятность: &f%avg_prob%%"
     last-violation: "&3Последнее нарушение: &f%date%"
+    help-usage: "/genai stats <игрок>"
+    help-description: "Показать статистику нарушений игрока"
+
   crash:
     usage: "&cИспользование: /genai crash <игрок> [режим]"
-    modes-description: "&eРежимы: entities (спавн энтитей), explosion (взрыв), particles (частицы), custompayload (кастомные пакеты)"
+    modes-description: "&eРежимы: entities (спавн сущностей), explosion (мощный взрыв), particles (перегрузка частиц), custompayload (повреждённые пакеты)"
     player-not-found: "&cИгрок не найден: %player%"
-    cannot-crash-self: "&cНельзя крашить собственного клиента!"
+    cannot-crash-self: "&cНельзя крашнуть свой собственный клиент!"
     unknown-mode: "&cНеизвестный режим. Доступные режимы: entities, explosion, particles, custompayload"
-    success: "&aНачинаю краш %player% методом %mode%"
-    failed: "&cПопытка краша не удалась: %error%"
+    success: "&aИнициализация краша %player% методом %mode%"
+    failed: "&cНе удалось крашнуть: %error%"
+    help-usage: "/genai crash <игрок> [режим]"
+    help-description: "Краш клиента игрока различными методами"
+
   punish:
     usage: "&cИспользование: /genai punish <игрок> [причина]"
-    player-punished: "&aИгрок %player% был наказан"
-    no-reason: "&cПричина не указана"
+    player-punished: "&aИгрок %player% был наказан."
+    no-reason: "&cПричина не указана."
+    help-usage: "/genai punish <игрок>"
+    help-description: "Запускает анимацию наказания для игрока"
+
   token:
-    usage: "&cИспользование: /genai token <токен>"
+    usage: "&cИспользование: /genai token set <токен>|clear|info"
     invalid-token: "&cНеверный токен"
-    token-activated: "&aТокен активирован! Ваша подписка продлена"
-    already-active: "&cУ вас уже есть активная подписка"
+    token-activated: "&aТокен активирован! Ваша подписка продлена."
+    already-active: "&cУ вас уже есть активная подписка."
+    saved: "&aТокен сохранён. Идёт проверка..."
+    valid: "&aТокен действителен."
+    invalid: "&cТокен недействителен."
+    cleared: "&aТокен очищен."
+    set-hint: "&7Используйте /genai token set <токен> для установки токена."
+    info-header: "&6=== Информация о токене ==="
+    info-token: "&eСохранённый токен: &7%token%"
+    info-premium: "&eПремиум-статус: &7%value%"
+    info-days: "&eОставшиеся дни: &7%days%"
+    info-ip: "&eПоследний IP: &7%ip%"
+    info-can-rebind: "&eМожно заново привязать IP: &7%value%"
+    yes: "да"
+    no: "нет"
+    help-usage: "/genai token set <токен>|clear|info"
+    help-description: "Управление токеном авторизации"
+
   server:
     usage: "&cИспользование: /genai server <action>"
-    reloaded: "&aКонфигурация сервера перезагружена"
-    stats-generated: "&aСтатистика сгенерирована"
-    invalid-action: "&cНеверное действие"
+    reloaded: "&aКонфигурация сервера перезагружена."
+    stats-generated: "&aСтатистика сгенерирована."
+    invalid-action: "&cНеверное действие."
+    help-usage: "/genai server <подкоманда>"
+    help-description: "Управление локальным ИИ сервером"
+

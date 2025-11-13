@@ -12,11 +12,19 @@ public class AlertsCommand extends SubCommand {
     }
 
     @Override
-    public String getName() { return "alerts"; }
+    public String getName() {
+        return "alerts";
+    }
+
     @Override
-    public String getDescription() { return "Включить/выключить оповещения для себя"; }
+    public String getDescription() {
+        return plugin.getLocaleManager().getMessage("commands.alerts.help-description");
+    }
+
     @Override
-    public String getUsage() { return "/genai alerts"; }
+    public String getUsage() {
+        return plugin.getLocaleManager().getMessage("commands.alerts.help-usage");
+    }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
@@ -33,3 +41,4 @@ public class AlertsCommand extends SubCommand {
         }
     }
 }
+

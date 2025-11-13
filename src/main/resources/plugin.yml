@@ -13,5 +13,4 @@ permissions:
 commands:
   genai:
     aliases: [mac]
-    permission: genai.admin
-    usage: "/<command> [reload|alerts|history|punish]"
+    usage: "/<command> [alerts|server|stats|punish|history|token|crash]"

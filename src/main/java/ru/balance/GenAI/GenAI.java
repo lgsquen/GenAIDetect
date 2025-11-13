@@ -5,7 +5,9 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.balance.GenAI.command.CommandManager;
@@ -18,6 +20,7 @@ import ru.balance.GenAI.service.DatabaseService;
 import ru.balance.GenAI.service.HeartbeatService;
 import ru.balance.GenAI.service.TokenService;
 import ru.balance.GenAI.service.ViolationManager;
+
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Set;
@@ -42,11 +45,9 @@ public final class GenAI extends JavaPlugin {
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
+        this.serverUrl = getConfig().getString("server.url", "http://localhost:8000");
 
-        // hi
-        getLogger().info("GenAI Anti-Cheat v1.0 - Бесплатная версия");
-        getLogger().info("Лимит аналихов: 300/мин | Премиум: @genac_bot");
-        getLogger().info("Телеграм канал: @genanticheat");
+        getLogger().info("GenAI Anti-Cheat starting...");
 
         this.localeManager = new LocaleManager(this);
 
@@ -62,22 +63,20 @@ public final class GenAI extends JavaPlugin {
         this.tokenService = new TokenService(this);
         this.violationManager = new ViolationManager(this);
         this.mitigationManager = new MitigationManager(this);
-        // проверка сервера
-        this.serverUrl = getConfig().getString("server.url", "http://localhost:8000");
         isServerConnected = true;
         initializePluginServices();
-        getLogger().info("Проверка ИИ сервера пропущена. Плагин инициализирован без проверки.");
+        getLogger().info("GenAI Anti-Cheat enabled.");
 
         CommandManager commandManager = new CommandManager(this);
-        getCommand("genai").setExecutor(commandManager);
-        getCommand("genai").setTabCompleter(commandManager);
+        if (getCommand("genai") != null) {
+            getCommand("genai").setExecutor(commandManager);
+            getCommand("genai").setTabCompleter(commandManager);
+        }
 
         getServer().getPluginManager().registerEvents(new MitigationListener(this), this);
 
-        // сообщение о запуске
         Bukkit.getScheduler().runTaskLater(this, () -> {
-            Bukkit.getConsoleSender().sendMessage("§6[GenAI] §fАктивирован");
-            Bukkit.getConsoleSender().sendMessage("§6[GenAI] §eЛимит анализов: §c300/мин | Канал: §f@genanticheat");
+            Bukkit.getConsoleSender().sendMessage("[GenAI] Plugin enabled.");
         }, 20L);
     }
 
@@ -92,7 +91,7 @@ public final class GenAI extends JavaPlugin {
                         if (result != null && "healthy".equals(result.get("status"))) {
                             isServerConnected = true;
                             Bukkit.getScheduler().runTask(this, this::initializePluginServices);
-                            getLogger().info("ИИ сервер подключен: " + serverUrl);
+                            getLogger().info("Connected to server: " + serverUrl);
                         } else {
                             disablePlugin();
                         }
@@ -101,12 +100,11 @@ public final class GenAI extends JavaPlugin {
                     }
                 }
             } catch (Exception e) {
-                getLogger().warning("Не удалось подключиться к локальному ИИ серверу: " + e.getMessage());
+                getLogger().warning("Failed to connect to server: " + e.getMessage());
                 disablePlugin();
             }
         });
     }
-
 
     private void disablePlugin() {
         Bukkit.getScheduler().runTask(this, () -> getServer().getPluginManager().disablePlugin(this));
@@ -138,7 +136,8 @@ public final class GenAI extends JavaPlugin {
             if (PacketEvents.getAPI() != null && PacketEvents.getAPI().isLoaded()) {
                 PacketEvents.getAPI().terminate();
             }
-        } catch (NoClassDefFoundError ignored) {}
+        } catch (NoClassDefFoundError ignored) {
+        }
     }
 
     public void reloadPluginConfig() {
@@ -160,15 +159,41 @@ public final class GenAI extends JavaPlugin {
         return !alertsDisabledAdmins.contains(uuid);
     }
 
-    public static GenAI getInstance() { return instance; }
-    public static boolean isServerActive() { return isServerConnected; }
-    public String getServerUrl() { return this.serverUrl; }
-    public DatabaseService getDatabaseService() { return databaseService; }
-    public TokenService getTokenService() { return tokenService; }
-    public OkHttpClient getHttpClient() { return this.httpClient; }
-    public ViolationManager getViolationManager() { return this.violationManager; }
-    public LocaleManager getLocaleManager() { return this.localeManager; }
-    public MitigationManager getMitigationManager() { return mitigationManager; }
+    public static GenAI getInstance() {
+        return instance;
+    }
+
+    public static boolean isServerActive() {
+        return isServerConnected;
+    }
+
+    public String getServerUrl() {
+        return this.serverUrl;
+    }
+
+    public DatabaseService getDatabaseService() {
+        return databaseService;
+    }
+
+    public TokenService getTokenService() {
+        return tokenService;
+    }
+
+    public OkHttpClient getHttpClient() {
+        return this.httpClient;
+    }
+
+    public ViolationManager getViolationManager() {
+        return this.violationManager;
+    }
+
+    public LocaleManager getLocaleManager() {
+        return this.localeManager;
+    }
+
+    public MitigationManager getMitigationManager() {
+        return mitigationManager;
+    }
 
     private static class LazyHolder {
         private static final Moshi MOSHI = new Moshi.Builder().build();
@@ -178,3 +203,4 @@ public final class GenAI extends JavaPlugin {
         private static final JsonAdapter<Map<String, Object>> RESPONSE_ADAPTER = MOSHI.adapter(MAP_STRING_OBJECT_TYPE);
     }
 }
+

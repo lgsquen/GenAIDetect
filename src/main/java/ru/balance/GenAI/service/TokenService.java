@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 public class TokenService {
     private final GenAI plugin;
     private final OkHttpClient httpClient;
-    private final String serverUrl;
     private String storedToken;
 
     private static final Moshi MOSHI = new Moshi.Builder().build();
@@ -26,7 +25,6 @@ public class TokenService {
     public TokenService(GenAI plugin) {
         this.plugin = plugin;
         this.httpClient = plugin.getHttpClient();
-        this.serverUrl = plugin.getServerUrl();
         this.storedToken = plugin.getConfig().getString("auth.token", null);
     }
 
@@ -52,7 +50,12 @@ public class TokenService {
 
         return CompletableFuture.supplyAsync(() -> {
             try {
-                String url = serverUrl + "/subscription/" + storedToken;
+                String baseUrl = plugin.getServerUrl();
+                if (baseUrl == null || baseUrl.isEmpty()) {
+                    plugin.getLogger().warning("Server URL is not configured");
+                    return false;
+                }
+                String url = baseUrl + "/subscription/" + storedToken;
                 Request request = new Request.Builder()
                         .url(url)
                         .get()
@@ -72,13 +75,22 @@ public class TokenService {
         });
     }
 
+    public CompletableFuture<Map<String, Object>> getSubscriptionInfoAsync() {
+        return CompletableFuture.supplyAsync(this::getSubscriptionInfo);
+    }
+
     public Map<String, Object> getSubscriptionInfo() {
         if (!hasToken()) {
             return new HashMap<>();
         }
 
         try {
-            String url = serverUrl + "/subscription/" + storedToken;
+            String baseUrl = plugin.getServerUrl();
+            if (baseUrl == null || baseUrl.isEmpty()) {
+                plugin.getLogger().warning("Server URL is not configured");
+                return new HashMap<>();
+            }
+            String url = baseUrl + "/subscription/" + storedToken;
             Request request = new Request.Builder()
                     .url(url)
                     .get()

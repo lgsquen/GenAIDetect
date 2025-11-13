@@ -1,0 +1,17 @@
+name: GenAI
+version: 1.0
+main: ru.balance.GenAI.GenAI
+api-version: '1.16'
+author: Balance
+website: www.gen-ai.tech
+permissions:
+  genai.alerts:
+    default: op
+  genai.admin:
+    default: op
+
+commands:
+  genai:
+    aliases: [mac]
+    permission: genai.admin
+    usage: "/<command> [reload|alerts|history|punish]"

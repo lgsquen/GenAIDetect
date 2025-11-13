@@ -1,0 +1,49 @@
+# English messages for GenAI
+no-permission: "&cYou don't have permission to use this command."
+player-only-command: "&cThis command can only be used by a player."
+unknown-subcommand: "&cUnknown subcommand. Use /genai for help."
+player-not-found: "&cPlayer '%player%' has never played on this server."
+
+alerts:
+  message: "&8[&3GenAI&8] &f%player% &bis suspected of cheating &8(&3%probability% | VL: %vl%&8)"
+  toggled-on: "&aGenAI alerts have been enabled."
+  toggled-off: "&cGenAI alerts have been disabled."
+
+commands:
+  reload:
+    success: "&aGenAI configuration and language file have been successfully reloaded."
+  history:
+    usage: "&cUsage: /genai history <player>"
+    loading: "&3Loading history for %player%..."
+    no-history: "&aPlayer %player% has no recorded violations."
+    header: "&8>><< &3Violation History for %player% &8>><<"
+    entry: "&f%date% &8- &3%probability%"
+  stats:
+    usage: "&cUsage: /genai stats <player>"
+    loading: "&3Loading statistics for %player%..."
+    header: "&8>><< &3Statistics for %player% &8>><<"
+    total-violations: "&3Total violations in database: &f%count%"
+    average-probability: "&3Average probability: &f%avg_prob%%"
+    last-violation: "&3Last violation: &f%date%"
+  crash:
+    usage: "&cUsage: /genai crash <player> [mode]"
+    modes-description: "&eModes: entities (entity spawn), explosion (massive explosion), particles (particle overload), custompayload (corrupted packets)"
+    player-not-found: "&cPlayer not found: %player%"
+    cannot-crash-self: "&cCannot crash your own client!"
+    unknown-mode: "&cUnknown mode. Available modes: entities, explosion, particles, custompayload"
+    success: "&aInitiating crash on %player% using %mode% method"
+    failed: "&cCrash attempt failed: %error%"
+  punish:
+    usage: "&cUsage: /genai punish <player> [reason]"
+    player-punished: "&aPlayer %player% has been punished"
+    no-reason: "&cNo reason specified"
+  token:
+    usage: "&cUsage: /genai token <token>"
+    invalid-token: "&cInvalid token"
+    token-activated: "&aToken activated! Your subscription has been extended"
+    already-active: "&cYou already have an active subscription"
+  server:
+    usage: "&cUsage: /genai server <action>"
+    reloaded: "&aServer configuration reloaded"
+    stats-generated: "&aStatistics generated"
+    invalid-action: "&cInvalid action"

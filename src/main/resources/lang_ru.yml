@@ -85,5 +85,5 @@ commands:
     stats-generated: "&aСтатистика сгенерирована."
     invalid-action: "&cНеверное действие."
     help-usage: "/genai server <подкоманда>"
-    help-description: "Управление локальным ИИ сервером"
+    help-description: "Управление ИИ сервером"
 

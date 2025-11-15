@@ -85,17 +85,32 @@ public class TokenCommand extends SubCommand {
         tokenService.setToken(token);
         sender.sendMessage(msg("commands.token.saved"));
 
-        tokenService.validateToken().thenAccept(isValid -> {
-            if (isValid) {
-                sender.sendMessage(msg("commands.token.valid"));
+        tokenService.getSubscriptionInfoAsync().thenAccept(subInfo -> {
+            if (subInfo != null && !subInfo.isEmpty()) {
+                boolean premiumActive = false;
+                int remainingDays = 0;
+                String lastIp = "Not bound";
+
+                Object remainingDaysValue = subInfo.get("remaining_days");
+                if (remainingDaysValue instanceof Number) {
+                    remainingDays = ((Number) remainingDaysValue).intValue();
+                    premiumActive = remainingDays > 0 || remainingDays == -1;
+                }
+                Object lastIpValue = subInfo.get("last_ip");
+                if (lastIpValue != null) {
+                    lastIp = lastIpValue.toString();
+                }
+
                 String yes = msg("commands.token.yes");
                 String no = msg("commands.token.no");
-                String premiumValue = tokenService.isPremiumActive() ? yes : no;
-                sender.sendMessage(msg("commands.token.info-premium").replace("%value%", premiumValue));
+
+                sender.sendMessage(msg("commands.token.valid"));
+                sender.sendMessage(msg("commands.token.info-premium")
+                        .replace("%value%", premiumActive ? yes : no));
                 sender.sendMessage(msg("commands.token.info-days")
-                        .replace("%days%", String.valueOf(tokenService.getRemainingDays())));
+                        .replace("%days%", String.valueOf(remainingDays)));
                 sender.sendMessage(msg("commands.token.info-ip")
-                        .replace("%ip%", tokenService.getLastIp()));
+                        .replace("%ip%", lastIp));
             } else {
                 sender.sendMessage(msg("commands.token.invalid"));
             }
@@ -124,7 +139,7 @@ public class TokenCommand extends SubCommand {
                 Object remainingDaysValue = subInfo.get("remaining_days");
                 if (remainingDaysValue instanceof Number) {
                     remainingDays = ((Number) remainingDaysValue).intValue();
-                    premiumActive = remainingDays > 0;
+                    premiumActive = remainingDays > 0 || remainingDays == -1;
                 }
                 Object lastIpValue = subInfo.get("last_ip");
                 if (lastIpValue != null) {
@@ -157,4 +172,3 @@ public class TokenCommand extends SubCommand {
         return token.substring(0, 8) + "****" + token.substring(token.length() - 4);
     }
 }
-

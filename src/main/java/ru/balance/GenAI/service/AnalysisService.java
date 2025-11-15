@@ -35,6 +35,14 @@ public class AnalysisService {
             return;
         }
 
+        try {
+            TokenService tokenService = GenAI.getInstance().getTokenService();
+            if (tokenService != null && tokenService.hasToken()) {
+                json = tokenService.addTokenToRequest(json);
+            }
+        } catch (Exception ignored) {
+        }
+
         String url = GenAI.getInstance().getServerUrl() + "/analyze";
 
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));

@@ -85,5 +85,5 @@ commands:
     stats-generated: "&aStatistics generated"
     invalid-action: "&cInvalid action"
     help-usage: "/genai server <subcommand>"
-    help-description: "Manage local AI server"
+    help-description: "Manage AI server"
 

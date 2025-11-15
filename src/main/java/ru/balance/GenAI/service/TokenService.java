@@ -17,6 +17,10 @@ public class TokenService {
     private final GenAI plugin;
     private final OkHttpClient httpClient;
     private String storedToken;
+    private Map<String, Object> cachedSubscriptionInfo;
+    private long lastSubscriptionFetch;
+
+    private static final long CACHE_TTL_MILLIS = TimeUnit.SECONDS.toMillis(10);
 
     private static final Moshi MOSHI = new Moshi.Builder().build();
     private static final Type MAP_STRING_OBJECT_TYPE = Types.newParameterizedType(Map.class, String.class, Object.class);
@@ -26,10 +30,14 @@ public class TokenService {
         this.plugin = plugin;
         this.httpClient = plugin.getHttpClient();
         this.storedToken = plugin.getConfig().getString("auth.token", null);
+        this.cachedSubscriptionInfo = null;
+        this.lastSubscriptionFetch = 0L;
     }
 
     public void setToken(String token) {
         this.storedToken = token;
+        this.cachedSubscriptionInfo = null;
+        this.lastSubscriptionFetch = 0L;
         plugin.getConfig().set("auth.token", token);
         plugin.saveConfig();
         plugin.getLogger().info("Token updated successfully");
@@ -81,7 +89,14 @@ public class TokenService {
 
     public Map<String, Object> getSubscriptionInfo() {
         if (!hasToken()) {
+            this.cachedSubscriptionInfo = null;
+            this.lastSubscriptionFetch = 0L;
             return new HashMap<>();
+        }
+
+        long now = System.currentTimeMillis();
+        if (cachedSubscriptionInfo != null && now - lastSubscriptionFetch < CACHE_TTL_MILLIS) {
+            return new HashMap<>(cachedSubscriptionInfo);
         }
 
         try {
@@ -100,7 +115,11 @@ public class TokenService {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
                     Map<String, Object> result = RESPONSE_ADAPTER.fromJson(responseBody);
-                    return result != null ? result : new HashMap<>();
+                    if (result != null) {
+                        cachedSubscriptionInfo = new HashMap<>(result);
+                        lastSubscriptionFetch = now;
+                        return result;
+                    }
                 }
             }
         } catch (Exception e) {
@@ -112,6 +131,8 @@ public class TokenService {
 
     public void clearToken() {
         this.storedToken = null;
+        this.cachedSubscriptionInfo = null;
+        this.lastSubscriptionFetch = 0L;
         plugin.getConfig().set("auth.token", null);
         plugin.saveConfig();
         plugin.getLogger().info("Token cleared");
@@ -123,14 +144,12 @@ public class TokenService {
         }
 
         try {
-            if (jsonBody.trim().startsWith("{")) {
-                if (jsonBody.trim().endsWith("}")) {
-                    return jsonBody.substring(0, jsonBody.length() - 1) +
-                           ",\"token\":\"" + storedToken + "\"}";
-                } else {
-                    return jsonBody + ",\"token\":\"" + storedToken + "\"";
-                }
+            Map<String, Object> payload = RESPONSE_ADAPTER.fromJson(jsonBody);
+            if (payload == null) {
+                return jsonBody;
             }
+            payload.put("token", storedToken);
+            return RESPONSE_ADAPTER.toJson(payload);
         } catch (Exception e) {
             plugin.getLogger().warning("Failed to add token to request: " + e.getMessage());
         }
@@ -145,7 +164,11 @@ public class TokenService {
         }
 
         Object remainingDays = subInfo.get("remaining_days");
-        return remainingDays instanceof Number && ((Number) remainingDays).intValue() > 0;
+        if (remainingDays instanceof Number) {
+            int days = ((Number) remainingDays).intValue();
+            return days > 0 || days == -1;
+        }
+        return false;
     }
 
     public int getRemainingDays() {

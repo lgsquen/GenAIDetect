@@ -9,6 +9,10 @@ alerts:
   toggled-on: "&aGenAI alerts have been enabled."
   toggled-off: "&cGenAI alerts have been disabled."
 
+console:
+  ml-flag: "[GenAI] ML flag: %player% prob=%prob% VL=%vl%"
+  check-flag: "[GenAI] Check flag: %player% check=%check% VL=%vl%"
+
 help:
   header: "&b>>> GenAI Help <<<"
   entry: "&6%usage% &f- %description%"
@@ -86,4 +90,3 @@ commands:
     invalid-action: "&cInvalid action"
     help-usage: "/genai server <subcommand>"
     help-description: "Manage AI server"
-

@@ -1,7 +1,5 @@
 package ru.balance.GenAI.entity;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.scheduler.BukkitTask;
 import ru.balance.GenAI.GenAI;
 import ru.balance.GenAI.service.AnalysisService;
@@ -11,8 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-@Data
-@RequiredArgsConstructor
 public final class PlayerEntity {
     private final UUID uuid;
     private final String name;
@@ -30,8 +26,85 @@ public final class PlayerEntity {
     private long combatTagUntil = 0L;
     private BukkitTask postCombatAnalysisTask = null;
 
+    public PlayerEntity(UUID uuid, String name) {
+        this.uuid = uuid;
+        this.name = name;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public float getLastYaw() {
+        return lastYaw;
+    }
+
+    public void setLastYaw(float lastYaw) {
+        this.lastYaw = lastYaw;
+    }
+
+    public float getLastPitch() {
+        return lastPitch;
+    }
+
+    public void setLastPitch(float lastPitch) {
+        this.lastPitch = lastPitch;
+    }
+
+    public float getLastDeltaYaw() {
+        return lastDeltaYaw;
+    }
+
+    public void setLastDeltaYaw(float lastDeltaYaw) {
+        this.lastDeltaYaw = lastDeltaYaw;
+    }
+
+    public float getLastDeltaPitch() {
+        return lastDeltaPitch;
+    }
+
+    public void setLastDeltaPitch(float lastDeltaPitch) {
+        this.lastDeltaPitch = lastDeltaPitch;
+    }
+
+    public float getLastAccelYaw() {
+        return lastAccelYaw;
+    }
+
+    public void setLastAccelYaw(float lastAccelYaw) {
+        this.lastAccelYaw = lastAccelYaw;
+    }
+
+    public float getLastAccelPitch() {
+        return lastAccelPitch;
+    }
+
+    public void setLastAccelPitch(float lastAccelPitch) {
+        this.lastAccelPitch = lastAccelPitch;
+    }
+
+    public List<Frame> getFrames() {
+        return frames;
+    }
+
+    public List<Frame> getLastAnalyzedFrames() {
+        return lastAnalyzedFrames;
+    }
+
     public void setLastAnalyzedFrames(List<Frame> frames) {
         this.lastAnalyzedFrames = new ArrayList<>(frames);
+    }
+
+    public boolean isProcessingFlag() {
+        return isProcessingFlag;
+    }
+
+    public void setProcessingFlag(boolean processingFlag) {
+        isProcessingFlag = processingFlag;
     }
 
     public boolean isInCombat() {

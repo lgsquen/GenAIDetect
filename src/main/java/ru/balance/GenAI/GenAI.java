@@ -10,10 +10,13 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import ru.balance.GenAI.check.CheckManager;
+import ru.balance.GenAI.check.util.Config;
 import ru.balance.GenAI.command.CommandManager;
 import ru.balance.GenAI.listener.ConnectionListener;
 import ru.balance.GenAI.listener.MitigationListener;
 import ru.balance.GenAI.listener.PacketListener;
+import ru.balance.GenAI.listener.PlayerCheckListener;
 import ru.balance.GenAI.manager.LocaleManager;
 import ru.balance.GenAI.mitigation.MitigationManager;
 import ru.balance.GenAI.service.DatabaseService;
@@ -40,6 +43,7 @@ public final class GenAI extends JavaPlugin {
     private ViolationManager violationManager;
     private LocaleManager localeManager;
     private MitigationManager mitigationManager;
+    private CheckManager checkManager;
 
     @Override
     public void onEnable() {
@@ -50,6 +54,7 @@ public final class GenAI extends JavaPlugin {
         getLogger().info("GenAI Anti-Cheat starting...");
 
         this.localeManager = new LocaleManager(this);
+        Config.init(this);
 
         this.httpClient = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -63,6 +68,7 @@ public final class GenAI extends JavaPlugin {
         this.tokenService = new TokenService(this);
         this.violationManager = new ViolationManager(this);
         this.mitigationManager = new MitigationManager(this);
+        this.checkManager = new CheckManager(this);
         isServerConnected = true;
         initializePluginServices();
         getLogger().info("GenAI Anti-Cheat enabled.");
@@ -74,6 +80,7 @@ public final class GenAI extends JavaPlugin {
         }
 
         getServer().getPluginManager().registerEvents(new MitigationListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerCheckListener(this), this);
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             Bukkit.getConsoleSender().sendMessage("[GenAI] Plugin enabled.");
@@ -195,6 +202,10 @@ public final class GenAI extends JavaPlugin {
         return mitigationManager;
     }
 
+    public CheckManager getCheckManager() {
+        return checkManager;
+    }
+
     private static class LazyHolder {
         private static final Moshi MOSHI = new Moshi.Builder().build();
         private static final Type MAP_STRING_STRING_TYPE = Types.newParameterizedType(Map.class, String.class, String.class);
@@ -203,4 +214,3 @@ public final class GenAI extends JavaPlugin {
         private static final JsonAdapter<Map<String, Object>> RESPONSE_ADAPTER = MOSHI.adapter(MAP_STRING_OBJECT_TYPE);
     }
 }
-

@@ -70,10 +70,10 @@ processResources {
 tasks.named('shadowJar') {
     archiveClassifier.set('')
 
-    relocate 'com.github.retrooper.packetevents', 'ru.Fronzter.shadow.packetevents'
-    relocate 'com.squareup.moshi', 'ru.Fronzter.shadow.moshi'
-    relocate 'okhttp3', 'ru.Fronzter.shadow.okhttp'
-    relocate 'org.ejml', 'ru.Fronzter.shadow.ejml'
+    relocate 'com.github.retrooper.packetevents', 'ru.balance.shadow.packetevents'
+    relocate 'com.squareup.moshi', 'ru.balance.shadow.moshi'
+    relocate 'okhttp3', 'ru.balance.shadow.okhttp'
+    relocate 'org.ejml', 'ru.balance.shadow.ejml'
 
     minimize()
 }

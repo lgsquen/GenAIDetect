@@ -87,3 +87,6 @@ commands:
     help-usage: "/genai server <подкоманда>"
     help-description: "Управление ИИ сервером"
 
+console:
+  ml-flag: "[GenAI] ML flag: %player% prob=%prob% VL=%vl%"
+  check-flag: "[GenAI] Check: %player% check=%check% VL=%vl%"

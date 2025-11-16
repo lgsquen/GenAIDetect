@@ -2,6 +2,7 @@ package ru.balance.GenAI.listener;
 
 import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
@@ -33,10 +34,18 @@ public class PacketListener extends PacketListenerAbstract {
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (!isMlCheckEnabled) return;
-
         User user = event.getUser();
         if (user == null || user.getUUID() == null) return;
+
+        Player player = Bukkit.getPlayer(user.getUUID());
+        if (player != null && plugin.getCheckManager() != null) {
+            plugin.getCheckManager().handlePacketReceive(player, event);
+            if (event.isCancelled()) {
+                return;
+            }
+        }
+
+        if (!isMlCheckEnabled) return;
 
         PlayerEntity entity = PlayerRegistry.getPlayer(user.getUUID());
         if (entity == null) return;
@@ -93,15 +102,15 @@ public class PacketListener extends PacketListenerAbstract {
             WrapperPlayClientInteractEntity interact = new WrapperPlayClientInteractEntity(event);
             if (interact.getAction() == WrapperPlayClientInteractEntity.InteractAction.ATTACK) {
 
-                Player bukkitPlayer = Bukkit.getPlayer(user.getUUID());
-                if (bukkitPlayer != null) {
-                    plugin.getMitigationManager().handlePacketAttack(bukkitPlayer, event);
+                Player attackPlayer = Bukkit.getPlayer(user.getUUID());
+                if (attackPlayer != null) {
+                    plugin.getMitigationManager().handlePacketAttack(attackPlayer, event);
                     if (event.isCancelled()) return;
 
                     int targetId = interact.getEntityId();
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         Entity targetEntity = null;
-                        for (Entity worldEntity : bukkitPlayer.getWorld().getEntities()) {
+                        for (Entity worldEntity : attackPlayer.getWorld().getEntities()) {
                             if (worldEntity.getEntityId() == targetId) {
                                 targetEntity = worldEntity;
                                 break;
@@ -123,6 +132,20 @@ public class PacketListener extends PacketListenerAbstract {
                         }
                     });
                 }
+            }
+        }
+    }
+
+    @Override
+    public void onPacketSend(PacketSendEvent event) {
+        User user = event.getUser();
+        if (user == null || user.getUUID() == null) return;
+
+        Player player = Bukkit.getPlayer(user.getUUID());
+        if (player != null && plugin.getCheckManager() != null) {
+            plugin.getCheckManager().handlePacketSend(player, event);
+            if (event.isCancelled()) {
+                return;
             }
         }
     }

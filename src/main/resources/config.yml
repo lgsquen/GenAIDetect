@@ -262,16 +262,6 @@ legacy-checks:
       buffer-decrease: 0.5
       hit-cancel-ticks: 15
 
-    AimI:
-      max-violations: 30
-      remove-violations-after: 60
-      decay: 1
-      enabled: true
-      alert: true
-      max-buffer: 2
-      buffer-decrease: 0.25
-      hit-cancel-ticks: 15
-
     AimJ:
       max-violations: 30
       remove-violations-after: 60
@@ -305,14 +295,6 @@ legacy-checks:
       enabled: true
       alert: true
       hit-cancel-ticks: 15
-
-    AimN:
-      max-violations: 1
-      remove-violations-after: 60
-      decay: 1
-      enabled: true
-      alert: true
-      hit-cancel-ticks: 100
 
     AuraA:
       max-violations: 10

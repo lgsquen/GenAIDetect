@@ -117,18 +117,18 @@ public class PacketListener extends PacketListenerAbstract {
                             }
                         }
 
+                        entity.tagCombat(combatTimerTicks);
                         if (targetEntity instanceof Player) {
                             Player targetPlayer = (Player) targetEntity;
-                            entity.tagCombat(combatTimerTicks);
                             PlayerEntity targetPlayerEntity = PlayerRegistry.getPlayer(targetPlayer.getUniqueId());
                             if (targetPlayerEntity != null) {
                                 targetPlayerEntity.tagCombat(combatTimerTicks);
                             }
+                        }
 
-                            if (entity.getFrames().size() >= framesToAnalyze) {
-                                AnalysisService.analyze(entity);
-                                entity.getFrames().clear();
-                            }
+                        if (entity.getFrames().size() >= framesToAnalyze) {
+                            AnalysisService.analyze(entity);
+                            entity.getFrames().clear();
                         }
                     });
                 }

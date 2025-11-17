@@ -252,7 +252,7 @@ legacy-checks:
       buffer-decrease: 0.25
       hit-cancel-ticks: 20
 
-    AimH:
+    AimH: 
       max-violations: 30
       remove-violations-after: 60
       decay: 1
@@ -288,11 +288,11 @@ legacy-checks:
       buffer-decrease: 0.25
       hit-cancel-ticks: 15
 
-    AimM:
+    AimM: #turned off because of falses 
       max-violations: 5
       remove-violations-after: 60
       decay: 1
-      enabled: true
+      enabled: false
       alert: true
       hit-cancel-ticks: 15
 

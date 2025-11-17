@@ -11,7 +11,7 @@ language: "en"
 
 
 server:
-  url: "http://localhost:8000"
+  url: "https://api.genac.fun"
   timeout: 30
 
 #              Настройки модуля машинного обучения (ML)
